@@ -54,17 +54,27 @@ app.get('/addprod', isLoggedIn, function(req, res) {
 });
 
 app.post('/addprod', isLoggedIn, function(req, res) {
-    Product.create({name: req.body.product, price: req.body.price, quantity: req.body.quantity, store_id: req.user['_id']}, function(err, product) {
+    Product.create({name: req.body.product, price: req.body.price, quantity: req.body.quantity, storename: req.user.storename, address: req.user.address}, function(err, product) {
         if(err) {
             console.log(err);
             return res.render('secret');
         }
-        res.redirect('/secret');
+        else {
+            product.save();
+            res.redirect('/secret');
+        }
     });
 });
 
 app.get('/secret', isLoggedIn, function(req, res) {
-   res.render('secret'); 
+    Product.find().exec(function(err, foundProduct) {
+        if(err) {
+            console.log(err);
+        }
+        else {
+            res.render("secret", {products: foundProduct});
+        }
+    });
 });
 
 // LOGIN ROUTES
